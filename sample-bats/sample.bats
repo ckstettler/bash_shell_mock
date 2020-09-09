@@ -71,7 +71,7 @@ teardown()
 @test "sample.sh-failure" {
 
 
-    shellmock_expect grep --status 1 --match '"sample line" sample.out'
+    shellmock_expect grep --status 0 --match '"sample line" sample.out'
 
     shellmock_debug "starting the test"
 
@@ -79,7 +79,7 @@ teardown()
 
     shellmock_dump
 
-    [ "$status" = "1" ]
+    [ "$status" = "0" ]
     [ "$output" = "sample not found" ]
 
 

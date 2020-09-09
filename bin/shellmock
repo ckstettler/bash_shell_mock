@@ -87,6 +87,7 @@ mock_capture_match()
 #------------------------------------
 mock_state_match()
 {
+    shellmock_debug mock_state_match "$1"
     local MATCH=$(shellmock_escape_quotes $1)
     local rec=$($CAT "$BATS_TEST_DIRNAME/tmpstubs/$cmd.playback.state.tmp" | $AWK  'BEGIN{FS="@@"}{if ($3=="E" && ($1 == "'"$MATCH"'")) print $2; if ($3=="P" && index("'"$MATCH"'",$1)) print $2;if ($3=="X" && match("'"$MATCH"'", $1)) print $2}' | $TAIL -1)
     $ECHO $rec
@@ -97,6 +98,8 @@ mock_state_match()
 #------------------------------------------------------------------------
 shellmock_expect()
 {
+    shellmock_debug shellmock_expect $*
+
     #---------------------------------------
     # The first arg is the command basename.
     #---------------------------------------
@@ -167,6 +170,11 @@ shellmock_expect()
         shift # past argument or value
     done
 
+    shellmock_debug shellmock_expect "MATCH=$MATCH"
+    shellmock_debug shellmock_expect "FORWARD=$FORWARD"
+    shellmock_debug shellmock_expect "OUTPUT=$OUTPUT"
+    shellmock_debug shellmock_expect "STATUS=$STATUS"
+    shellmock_debug shellmock_expect "MTYPE=$MTYPE"
 
     #-----------------------------------------------------------
     # If the command has not been stubbed then generate the stub
@@ -194,6 +202,8 @@ shellmock_expect()
     #    forward implies executing an alternative command vs mocking
     #
     #---------------------------------------------------------------
+    #match_parts $MATCH
+
     if [ "$FORWARD" != "" ]; then
         $ECHO "$MATCH@@FORWARD@@$FORWARD@@0@@$MTYPE" >> "$BATS_TEST_DIRNAME/tmpstubs/$cmd.playback.capture.tmp"
     elif [ "$SOURCE" != "" ]; then
@@ -206,6 +216,14 @@ shellmock_expect()
 
 }
 
+match_parts()
+{
+    declare -a "args=($1)"
+    shellmock_debug expand_args "${args[0]}"
+    shellmock_debug expand_args "${args[1]}"
+
+}
+
 
 #----------------------------------------
 # This funciton is used by the mock stubs
@@ -213,6 +231,8 @@ shellmock_expect()
 #----------------------------------------
 shellmock_replay()
 {
+   shellmock_debug shellmock_replay "$*"
+
    cmd="$1"
    match="$2"
 
@@ -323,7 +343,7 @@ shellmock_dump()
 shellmock_debug()
 {
     if [ ! -z "$TEST_FUNCTION" ]; then
-        POSIXLY_CORRECT=1 $ECHO "$1" >> "$shellmock_capture_debug"
+        POSIXLY_CORRECT=1 $ECHO "$*" >> "$shellmock_capture_debug"
     fi
 }
 
