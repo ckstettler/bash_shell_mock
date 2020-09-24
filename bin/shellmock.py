@@ -228,7 +228,7 @@ def add_expect():
     #-----------------------------------------------------------
     if not os.path.exists(TEMP_STUBS_DIR):
         debug("shellmock_expect: creating stub dir {}".format(TEMP_STUBS_DIR))
-        os.makedirs(TEMP_STUBS_DIR, 0755)
+        os.makedirs(TEMP_STUBS_DIR)
 
     with open(cmd,"w+") as stub:
         stub.write("#!/usr/bin/env bash\n")
